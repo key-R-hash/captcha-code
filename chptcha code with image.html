@@ -1,0 +1,110 @@
+<html>
+<head>
+    <script>
+        function check() {
+            var text = document.getElementById("text");
+            if(text.value == rand + " " + imgArray[imgKey]){
+                alert("OK")
+            }else {
+                alert("NO")
+                text.value = ""
+                createRecaptcha(6)
+
+            }
+            return false;
+        }
+
+
+    </script>
+</head>
+<body>
+<script type="text/javascript" src="jquery.js"></script>
+<canvas id="mycanvas" width="250" height="50">
+
+</canvas>
+<form onsubmit="return check()">
+    <input id="text" type="text">
+    <button type="submit">check</button>
+    <button type="reset">reset</button>
+    <button type="button" onclick="createRecaptcha(6)">reload</button>
+    <button type="button" onclick="voice()">voice</button>
+</form>
+<script>
+    var rand ="";
+    var imgArray = "";
+    var imgKey = "";
+    var img;
+    function createRecaptcha (charlen) {
+        imgArray = ["2","67","76","2503","8001","9729","250"];
+        imgKey = Math.floor(Math.random()*imgArray.length);
+        console.log(imgKey);
+        img = document.createElement("img");
+        img.src = imgArray[imgKey] + ".jpg"
+        img.onload = function () {
+            createChaptcha(charlen)
+        }
+    }
+    function createChaptcha(charlen) {
+        rand = "";
+        var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz!@#$%^&*"
+
+        for(var i=0;i<charlen;i++){
+            var random = Math.floor(Math.random()* chars.length);
+            rand += chars.charAt(random);
+        }
+
+        c = document.getElementById('mycanvas');
+        p = c.getContext("2d");
+        p.beginPath();
+        p.globalAlpha = 1;
+
+        p.fillStyle = "gray"
+        p.fillRect(0,0,c.width,c.height);
+
+        for(var i=0;i<8;i++){
+            var x = Math.floor(Math.random() * c.width)
+            var y = Math.floor(Math.random() * c.height)
+            var xx = Math.floor(Math.random() * c.width)
+            var yy = Math.floor(Math.random() * c.height)
+            p.moveTo(xx,yy);
+            p.lineTo(x,y);
+        }
+        p.strokeStyle = "red"
+        p.stroke()
+
+        p.fillStyle = "white"
+        p.font = "20px arial"
+        p.fillText(rand,10,30)
+        p.beginPath()
+        p.globalAlpha = 0.6;
+        p.drawImage(img,100,8,c.width - 108,c.height -16)
+
+
+    }
+    function voice() {
+        // var voice = createChaptcha(voice);
+        // console.log(voice);
+        var voice = rand + " " + imgArray[imgKey];
+        console.log(voice);
+        for(i=0;i<voice.length;i++){
+            var speech = voice.charAt(i)
+            if(speech == speech.toUpperCase() && !(/[^\w\*]/.test(speech)) && !(/^[1-9][0-9]*$/.test(speech)) && !(/\*/.test(speech))){
+                speech = "upper case " + speech;
+            }
+            if(speech == " "){
+                speech = "insert space"
+            }
+
+            console.log(989, speech)
+            var msg = new SpeechSynthesisUtterance(speech);
+            window.speechSynthesis.speak(msg);
+
+        }
+
+
+    }
+    createRecaptcha(6)
+</script>
+
+</body>
+</html>
